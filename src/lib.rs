@@ -50,9 +50,11 @@ impl Counter {
     }
 
     /// Get the most common pair of characters
-    pub fn most_common(&self) -> Option<&TupleStruct> {
-        self.counts.iter().max_by(|a, b| a.1.cmp(&b.1))
-        .map(|(k, _v)| k)
+    pub fn most_common(&self) {
+        let max = self.counts.iter().max_by(|_, b| b.1.cmp(&b.1)).unwrap().1;
+        self.counts.iter()
+        .filter_map(|(key, &val)| if val == *max { Some(key) } else { None })
+        .collect()
 
     }
 }
@@ -64,17 +66,26 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn test_counter_counts_correct_number_of_character_pairs() {
         let mut counter = Counter::new();
         let my_string = String::from("Cat at 😃!");
         counter.count(&my_string);
-        println!("{:?}", counter.counts());
+        // println!("{:?}", counter.counts());
         assert_eq!(counter.counts().get(&TupleStruct(' ', 'a')), Some(&1));
         assert_eq!(counter.counts().get(&TupleStruct(' ', '😃')), Some(&1));
         assert_eq!(counter.counts().get(&TupleStruct('C', 'a')), Some(&1));
         assert_eq!(counter.counts().get(&TupleStruct('a', 't')), Some(&2));
         assert_eq!(counter.counts().get(&TupleStruct('t', ' ')), Some(&2));
         assert_eq!(counter.counts().get(&TupleStruct('😃', '!')), Some(&1));
+    }
+
+    #[test]
+    fn test_most_common_returns_expected_result() {
+        let mut counter = Counter::new();
+        let my_string = String::from("Cat at 😃!");
+        counter.count(&my_string);
+        // println!("{:?}", counter.counts());
+        println!("{:?}", counter.most_common());
     }
 
 }
